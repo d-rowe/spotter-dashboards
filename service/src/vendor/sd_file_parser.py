@@ -410,7 +410,7 @@ class Spectrum:
 
         with open(os.path.join( self.outpath,'bulkparameters.csv'),'w') as file:
 
-            header = "# year , month , day, hour ,min, sec, milisec , Significant Wave Height, Mean Period, Peak Period, Mean Direction, Peak Direction, Mean Spreading, Peak Spreading\n"
+            header = "# year,month,day,hour,min,sec,milisec,Significant Wave Height,Mean Period,Peak Period,Mean Direction,Peak Direction,Mean Spreading,Peak Spreading\n"
             file.write(header)
             format = '%d, ' * 7 + '%6.2f, ' * 6 + '%6.2f \n'
             for ii in range( 0 , len(hm0)):
@@ -644,7 +644,7 @@ def parseLocationFiles( inputFileName=None, outputFileName='displacement.CSV',
         data        = np.concatenate( (datetime,data) , axis=1 )
 
         fmt = '%i,'*7  + '%.5e,%.5e,%.5e'
-        header=header+', x (m), y(m), z(m)'
+        header=header+', x(m), y(m), z(m)'
     elif kind=='SST':
         #
         # Read the data using pandas, and convert to numpy

@@ -6,6 +6,10 @@ services:
     depends_on:
       influx:
         condition: service_started
-  influx:
-    image: influxdb:1.11.8
+  database:
+    image: mongo
     restart: always
+    environment:
+      # keep in mind, instance is only accessible in vpc
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password

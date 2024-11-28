@@ -1,0 +1,11 @@
+services:
+  service:
+    build: ./service
+    ports:
+      - "3002:5000"
+    depends_on:
+      influx:
+        condition: service_started
+  influx:
+    image: influxdb:1.11.8
+    restart: always

@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 class CSVParser:
     def __init__(self, file: str):
         self.headers = []
@@ -23,6 +24,7 @@ class CSVParser:
                     yield format_timestamp(record)
                 line_num += 1
 
+
 def coerce(val):
     val = val.strip()
     try:
@@ -37,6 +39,7 @@ def coerce(val):
         pass
 
     return val
+
 
 # consolidate date time fields into single timestamp
 def format_timestamp(record):

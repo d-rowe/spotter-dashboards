@@ -19,7 +19,6 @@ def worker(job):
     job_entity.update_status(job_id, 'PROCESSING')
     sd_parser(path=artifacts_dir, outpath=artifacts_dir)
 
-    # ingest displacement
     job_entity.update_status(job_id, 'INGESTING_DISPLACEMENT')
     csv_parser = CSVParser(os.path.join(artifacts_dir, 'displacement.csv'))
     for record in csv_parser.records():
@@ -32,9 +31,7 @@ def worker(job):
         record['job_id'] = job_id
         location_entity.add(record)
 
-    job_entity.update_status(job_id, 'CLEAING_UP')
+    job_entity.update_status(job_id, 'CLEANING_UP')
     shutil.rmtree(artifacts_dir, ignore_errors=True)
-
-    location_entity.log()
 
     job_entity.update_status(job_id, 'SUCCESS')

@@ -2,12 +2,12 @@ services:
   service:
     build: ./service
     ports:
-      - "3002:5000"
+      - "3005:3005"
     depends_on:
-      influx:
+      database:
         condition: service_started
   database:
-    image: mongo
+    image: mongo:8.0.3-noble
     restart: always
     environment:
       # keep in mind, instance is only accessible in vpc

@@ -1,4 +1,5 @@
 service/input
 service/output
 *.pyc
+.idea
 __pycache__

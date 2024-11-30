@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from werkzeug.utils import secure_filename, redirect
 import os
 import uuid
@@ -6,7 +7,7 @@ import ingestion
 import job_entity
 
 app = Flask(__name__)
-
+CORS(app)
 
 @app.route('/job-status/<job_id>')
 def get_status(job_id):
@@ -16,17 +17,8 @@ def get_status(job_id):
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    # check if the post request has the file part
-    if 'file' not in request.files:
-        return redirect(request.url)
-    file = request.files['file']
-    # If the user does not select a file, the browser submits an
-    # empty file without a filename.
-    if file.filename == '':
-        return redirect(request.url)
-
     job_id = str(uuid.uuid4())
-    artifacts_dir = os.path.join('.', 'job_artifacts', job_id)
+    artifacts_dir = os.path.join('job_artifacts', job_id)
     job = {
         'job_id': job_id,
         'artifacts_dir': artifacts_dir,
@@ -35,12 +27,13 @@ def upload():
     job_entity.add(job)
     os.makedirs(artifacts_dir)
 
-    for current_file in request.files.getlist('file'):
-        if current_file.filename == '':
-            continue
+    for current_file in request.files.getlist('files[]'):
+        print(current_file)
         filename = secure_filename(current_file.filename)
         current_file.save(os.path.join(artifacts_dir, filename))
 
     ingestion.run(job)
 
-    return job_id
+    return {
+        'jobId': job_id
+    }

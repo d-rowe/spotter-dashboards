@@ -1,55 +1,59 @@
 import {useCallback, useRef, useState} from 'react';
-import axios, {AxiosProgressEvent} from 'axios';
+import axios from 'axios';
 import './App.css';
 
-const MESSAGES = {
-  TRANSFERRING: 'Preparing your files',
-  PROCESSING: 'Crunching the math',
-  INGESTING_DISPLACEMENT: 'Storing displacement results',
-  INGESTING_LOCATION: 'Storing location results',
-  CLEANING_UP: 'Cleaning up',
-  SUCCESS: 'All done',
+enum Status {
+  TRANSFERRING = 'TRANSFERRING',
+  PROCESSING = 'PROCESSING',
+  INGESTING = 'INGESTING',
+  CLEANING_UP = 'CLEANING_UP',
+  SUCCESS = 'SUCCESS',
+}
+
+const MESSAGES: Record<Status, string> = {
+  [Status.TRANSFERRING]: 'Preparing your files',
+  [Status.PROCESSING]: 'Crunching the math',
+  [Status.INGESTING]: 'Indexing data for visualization. Go outside, this will take a while.',
+  [Status.CLEANING_UP]: 'Cleaning up',
+  [Status.SUCCESS]: 'All done',
 } as const;
 
-const TIMEOUT = 1000 * 60 * 5 // 5 mins
-const POLL_INTERVAL = 1000;
+// if i expect more than a few concurrent jobs across clients
+// i'll definitely have to move this to websockets
+const POLL_INTERVAL = 20;
 
 function App() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [uploadStatus, setUploadStatus] = useState('');
+  const [uploadStatus, setUploadStatus] = useState<Status | null>(null);
   const [rowsProcessed, setRowsProcessed] = useState(0);
-
-  const onUploadProgress = useCallback((progressEvent: AxiosProgressEvent) => {
-    const percentage = Math.floor((progressEvent.progress) ?? 0 * 100);
-    setUploadStatus(`Uploading your files (${percentage}%)`);
-  }, []);
+  const [progress, setProgress] = useState(0);
 
   const onFile = useCallback(async () => {
     if (!inputRef?.current) {
       return;
     }
     const files = inputRef.current.files ?? [];
+    setUploadStatus(Status.TRANSFERRING);
     const {data: jobMetadata} = await axios.postForm('http://localhost:3005/upload', {
       'files[]': files,
-    }, {
-      onUploadProgress,
     });
 
-    let status: keyof typeof MESSAGES = 'TRANSFERRING';
-    setUploadStatus(MESSAGES[status]);
-    let duration = 0;
-    while (status !== 'SUCCESS' && duration < TIMEOUT) {
+    let status = Status.TRANSFERRING;
+    let totalRows = 0;
+    setUploadStatus(status);
+    while (status !== 'SUCCESS') {
       await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL));
-      duration += POLL_INTERVAL;
       const {data} = await axios.get(`http://localhost:3005/job/${jobMetadata.jobId}`);
-      status = data.status as keyof typeof MESSAGES;
+      status = data.status as Status
+      totalRows = data.total_rows;
       setRowsProcessed(data.rows_ingested);
-      setUploadStatus(MESSAGES[status]);
+      setProgress(data.rows_ingested / totalRows)
+      setUploadStatus(status);
     }
-  }, [onUploadProgress]);
+  }, []);
 
   return (
-    <div>
+    <div className='upload-pipeline'>
       <input
         type='file'
         id='file'
@@ -59,9 +63,15 @@ function App() {
         onChange={onFile}
         ref={inputRef}
       />
-      {uploadStatus}
-      <br/>
-      {`Processed ${rowsProcessed} rows`}
+      {uploadStatus !== null && (
+        <p>{MESSAGES[uploadStatus]}</p>
+      )}
+      {uploadStatus === Status.INGESTING && (
+        <>
+          <p>{`Indexed rows: ${rowsProcessed}`}</p>
+          <p>{(progress * 100).toFixed(2)}%</p>
+        </>
+      )}
     </div>
   )
 }

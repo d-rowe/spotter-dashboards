@@ -11,6 +11,8 @@ def update_status(job_id, status):
 def increase_rows(job_id):
     jobs[job_id]['rows_ingested'] += 1
 
+def set_total_rows(job_id, total_rows):
+    jobs[job_id]['total_rows'] = total_rows
 
 def get(job_id):
     return jobs[job_id]

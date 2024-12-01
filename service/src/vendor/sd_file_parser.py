@@ -679,8 +679,8 @@ def parseLocationFiles( inputFileName=None, outputFileName='displacement.CSV',
         data        = np.concatenate( (datetime,data) , axis=1 )
 
         fmt = '%i,'*7 +'%13.8f' * 5 + '%13.8f'
-        header=header+', latitude (decimal degrees),longitude (decimal ' + \
-            'degrees),elevation (m),SOG (mm/s),COG (deg*1000),Vert Vel (mm/s)'
+        header=header+', latitude,longitude,' + \
+            'elevation (m),SOG (mm/s),COG (deg*1000),Vert Vel (mm/s)'
         #
         #
     else:
@@ -699,7 +699,7 @@ def parseLocationFiles( inputFileName=None, outputFileName='displacement.CSV',
         data        = np.concatenate( (datetime,data) , axis=1 )
 
         fmt = '%i,'*7 +'%13.8f,%13.8f'
-        header=header+', latitude (decimal degrees),longitude (decimal degrees)'
+        header=header+',latitude,longitude'
         #
     #
 

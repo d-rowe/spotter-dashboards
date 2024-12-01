@@ -9,10 +9,9 @@ import job_entity
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/job-status/<job_id>')
+@app.route('/job/<job_id>')
 def get_status(job_id):
-    job = job_entity.get(job_id)
-    return job['status']
+    return job_entity.get(job_id)
 
 
 @app.route('/upload', methods=['POST'])
@@ -22,13 +21,13 @@ def upload():
     job = {
         'job_id': job_id,
         'artifacts_dir': artifacts_dir,
-        'status': 'TRANSFERRING'
+        'status': 'TRANSFERRING',
+        'rows_ingested': 0,
     }
     job_entity.add(job)
     os.makedirs(artifacts_dir)
 
     for current_file in request.files.getlist('files[]'):
-        print(current_file)
         filename = secure_filename(current_file.filename)
         current_file.save(os.path.join(artifacts_dir, filename))
 

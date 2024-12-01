@@ -6,10 +6,31 @@ services:
     depends_on:
       database:
         condition: service_started
+  grafana:
+    image: grafana/grafana-oss:11.3.1
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      database:
+        condition: service_started
   database:
-    image: mongo:8.0.3-noble
-    restart: always
+    image: influxdb:2
+    volumes:
+      - influx_data:/var/lib/influxdb2
+      - influx_config:/etc/influxdb2
     environment:
-      # keep in mind, instance is only accessible in vpc
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: password
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: user
+      DOCKER_INFLUXDB_INIT_PASSWORD: password
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: my-token
+      DOCKER_INFLUXDB_INIT_ORG: default
+      DOCKER_INFLUXDB_INIT_BUCKET: default
+    ports:
+      - "8086:8086"
+
+volumes:
+  influx_data:
+  influx_config:
+  grafana_data:

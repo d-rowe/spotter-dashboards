@@ -17,6 +17,7 @@ const POLL_INTERVAL = 1000;
 function App() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploadStatus, setUploadStatus] = useState('');
+  const [rowsProcessed, setRowsProcessed] = useState(0);
 
   const onUploadProgress = useCallback((progressEvent: AxiosProgressEvent) => {
     const percentage = Math.floor((progressEvent.progress) ?? 0 * 100);
@@ -28,7 +29,7 @@ function App() {
       return;
     }
     const files = inputRef.current.files ?? [];
-    const {data} = await axios.postForm('http://localhost:3005/upload', {
+    const {data: jobMetadata} = await axios.postForm('http://localhost:3005/upload', {
       'files[]': files,
     }, {
       onUploadProgress,
@@ -40,8 +41,9 @@ function App() {
     while (status !== 'SUCCESS' && duration < TIMEOUT) {
       await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL));
       duration += POLL_INTERVAL;
-      const response = await axios.get(`http://localhost:3005/job-status/${data.jobId}`);
-      status = response.data as keyof typeof MESSAGES;
+      const {data} = await axios.get(`http://localhost:3005/job/${jobMetadata.jobId}`);
+      status = data.status as keyof typeof MESSAGES;
+      setRowsProcessed(data.rows_ingested);
       setUploadStatus(MESSAGES[status]);
     }
   }, [onUploadProgress]);
@@ -58,6 +60,8 @@ function App() {
         ref={inputRef}
       />
       {uploadStatus}
+      <br/>
+      {`Processed ${rowsProcessed} rows`}
     </div>
   )
 }

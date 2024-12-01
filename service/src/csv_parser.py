@@ -53,7 +53,7 @@ def format_timestamp(record):
         # millisecond to microsecond conversion
         record['msec'] * 1000,
     )
-    record['timestamp'] = int(dt.timestamp() * 1000)
+    record['timestamp'] = float(dt.timestamp())
     # cleanup prior date time fields
     del record['year']
     del record['month']

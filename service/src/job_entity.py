@@ -1,16 +1,17 @@
-from db_client import client
-
-job = client.displacement.my_collection
-job.create_index('job_id')
+jobs = {}
 
 def add(record):
-    job.insert_one(record)
+    job_id = record['job_id']
+    jobs[job_id] = record
 
 
 def update_status(job_id, status):
-    query = {'job_id': job_id}
-    job.update_one(query, {'$set': {'status': status}})
+    jobs[job_id]['status'] = status
+
+def increase_rows(job_id):
+    jobs[job_id]['rows_ingested'] += 1
 
 
 def get(job_id):
-    return job.find_one({'job_id': job_id})
+    return jobs[job_id]
+

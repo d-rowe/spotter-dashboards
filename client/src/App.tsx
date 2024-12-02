@@ -24,8 +24,7 @@ const POLL_INTERVAL = 20;
 
 function App() {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [uploadStatus, setUploadStatus] = useState<Status | null>(null);
-  const [rowsProcessed, setRowsProcessed] = useState(0);
+  const [dataStatus, setDataStatus] = useState<Status | null>(null);
   const [progress, setProgress] = useState(0);
 
   const onFile = useCallback(async () => {
@@ -33,22 +32,21 @@ function App() {
       return;
     }
     const files = inputRef.current.files ?? [];
-    setUploadStatus(Status.TRANSFERRING);
+    setDataStatus(Status.TRANSFERRING);
     const {data: jobMetadata} = await axios.postForm('http://localhost:3005/upload', {
       'files[]': files,
     });
 
     let status = Status.TRANSFERRING;
     let totalRows = 0;
-    setUploadStatus(status);
+    setDataStatus(status);
     while (status !== 'SUCCESS') {
       await new Promise(resolve => setTimeout(resolve, POLL_INTERVAL));
       const {data} = await axios.get(`http://localhost:3005/job/${jobMetadata.jobId}`);
       status = data.status as Status
       totalRows = data.total_rows;
-      setRowsProcessed(data.rows_ingested);
       setProgress(data.rows_ingested / totalRows)
-      setUploadStatus(status);
+      setDataStatus(status);
     }
   }, []);
 
@@ -63,15 +61,25 @@ function App() {
         onChange={onFile}
         ref={inputRef}
       />
-      {uploadStatus !== null && (
-        <p>{MESSAGES[uploadStatus]}</p>
+      {dataStatus !== null && (
+        <p>{MESSAGES[dataStatus]}</p>
       )}
-      {uploadStatus === Status.INGESTING && (
-        <>
-          <p>{`Indexed rows: ${rowsProcessed}`}</p>
-          <p>{(progress * 100).toFixed(2)}%</p>
-        </>
+      {dataStatus === Status.INGESTING && (
+        <p>{(progress * 100).toFixed(2)}%</p>
       )}
+      <br />
+      <iframe
+        src="http://localhost:3000/d-solo/buoy/new-dashboard?orgId=1&from=1609488000000&to=1641024000000&timezone=browser&panelId=1&__feature.dashboardSceneSolo"
+        width="500"
+        height="500"
+        frameBorder="0"
+      />
+      <iframe
+        src="http://localhost:3000/d-solo/buoy/new-dashboard?orgId=1&from=1609488000000&to=1641024000000&timezone=browser&refresh=10s&panelId=2&__feature.dashboardSceneSolo"
+        width="500"
+        height="500"
+        frameBorder="0"
+      />
     </div>
   )
 }

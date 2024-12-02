@@ -3,7 +3,7 @@ apiVersion: 1
 prune: true
 
 datasources:
-  - name: main
+  - name: influxdb
     uid: main
     type: influxdb
     access: proxy

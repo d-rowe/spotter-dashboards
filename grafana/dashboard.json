@@ -243,7 +243,7 @@
                         "type": "influxdb",
                         "uid": "main"
                     },
-                    "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"displacement\"\n  )",
+                    "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"displacement\"\n  )\n  |> aggregateWindow(every: v.windowPeriod, fn: mean)",
                     "refId": "A"
                 }
             ],

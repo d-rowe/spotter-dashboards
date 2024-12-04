@@ -20,7 +20,7 @@ const MESSAGES: Record<Status, string> = {
 
 // if i expect more than a few concurrent jobs across clients
 // i'll definitely have to move this to websockets
-const POLL_INTERVAL = 20;
+const POLL_INTERVAL = 1000;
 
 export default function Upload() {
   const inputRef = useRef<HTMLInputElement>(null);

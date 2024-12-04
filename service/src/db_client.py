@@ -7,8 +7,8 @@ client = InfluxDBClient(
     org='default',
 )
 write_options = WriteOptions(
-    batch_size=1000,
-    flush_interval=5000
+    batch_size=500,
+    flush_interval=100
 )
 
 write_api = client.write_api(write_options=write_options)

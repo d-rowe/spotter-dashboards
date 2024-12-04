@@ -412,7 +412,7 @@ class Spectrum:
 
             header = "# year,month,day,hour,min,sec,milisec,Significant Wave Height,Mean Period,Peak Period,Mean Direction,Peak Direction,Mean Spreading,Peak Spreading\n"
             file.write(header)
-            format = '%d, ' * 7 + '%6.2f, ' * 6 + '%6.2f \n'
+            format = '%d, ' * 7 + '%6.2f, ' * 6 + '%6.2f\n'
             for ii in range( 0 , len(hm0)):
                 #
                 string = format % ( self.time[ii,0], self.time[ii,1],  self.time[ii,2],

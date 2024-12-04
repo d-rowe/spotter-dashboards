@@ -1,10 +1,29 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+.dashboard iframe {
+    width: 100%;
+    height: 100vh;
+    border: none;
 }
 
-.upload-pipeline {
-  text-align: left;
+.topbar {
+    margin: 8px;
+    color: rgb(204, 204, 220)
 }
+
+.upload {
+    display: flex;
+    align-items: center;
+}
+
+.upload-message {
+    padding: 0 16px 0 0;
+    margin: 0;
+}
+
+.upload input::file-selector-button {
+    font-weight: bold;
+    color: rgb(204, 204, 220);
+    padding: 0.5em;
+    border: thin solid grey;
+    border-radius: 3px;
+    background-color: rgba(204, 204, 220, 0.1);
+  }

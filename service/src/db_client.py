@@ -1,14 +1,17 @@
 from datetime import datetime
-import influxdb_client
-from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_client import InfluxDBClient, WriteOptions, Point
 
-client = influxdb_client.InfluxDBClient(
+client = InfluxDBClient(
     url='http://database:8086',
     token='my-token',
     org='default',
 )
+write_options = WriteOptions(
+    batch_size=1000,
+    flush_interval=5000
+)
 
-write_api = client.write_api(write_options=SYNCHRONOUS)
+write_api = client.write_api(write_options=write_options)
 
 
 def write(measurement, record):
@@ -16,7 +19,7 @@ def write(measurement, record):
     dt = datetime.fromtimestamp(timestamp).isoformat()
     del record['timestamp']
     for k, v in record.items():
-        p = influxdb_client.Point(measurement).time(dt).field(k, v)
+        p = Point(measurement).time(dt).field(k, v)
         write_api.write(bucket='default', org='default', record=p)
 
 

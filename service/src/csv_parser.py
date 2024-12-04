@@ -43,6 +43,7 @@ def coerce(val):
 
 # consolidate date time fields into single timestamp
 def format_timestamp(record):
+    record.setdefault('msec', 0)
     dt = datetime(
         record['year'],
         record['month'],

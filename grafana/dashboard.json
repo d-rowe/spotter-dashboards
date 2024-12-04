@@ -193,7 +193,7 @@
                             "type": "linear"
                         },
                         "showPoints": "auto",
-                        "spanNulls": false,
+                        "spanNulls": true,
                         "stacking": {
                             "group": "A",
                             "mode": "none"
@@ -252,7 +252,7 @@
         }
     ],
     "preload": false,
-    "refresh": "10s",
+    "refresh": "5s",
     "schemaVersion": 40,
     "tags": [],
     "templating": {
@@ -264,8 +264,8 @@
     },
     "timepicker": {},
     "timezone": "browser",
-    "title": "New dashboard",
+    "title": "Backyard Buoys",
     "uid": "buoy",
-    "version": 5,
+    "version": 2,
     "weekStart": ""
 }

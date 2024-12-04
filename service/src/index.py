@@ -1,10 +1,12 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from flask_cors import CORS
 from werkzeug.utils import secure_filename, redirect
 import os
 import uuid
 import data_pipeline
 import job_entity
+from services import upload_service, dashboard_service
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -12,6 +14,10 @@ CORS(app)
 @app.route('/job/<job_id>')
 def get_status(job_id):
     return job_entity.get(job_id)
+
+@app.route('/embed-url')
+def get_embed_url():
+    return dashboard_service.get_embed_url()
 
 
 @app.route('/upload', methods=['POST'])
